@@ -13,7 +13,9 @@ public abstract class Record
         this.mailId = mailId;
     }
 
-    public abstract void createRecordId();
+    abstract void createRecordId();
+    abstract String getRecordId();
+    abstract boolean checkIfFieldExists(String aField);
 
     public String toString()
     {

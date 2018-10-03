@@ -21,7 +21,7 @@ public class ProjectInfo
 
     public String getProjectId()
     {
-        return projectId;
+        return this.projectId;
     }
 
     public void setProjectId(String projectId)

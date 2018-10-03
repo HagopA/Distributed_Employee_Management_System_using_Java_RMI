@@ -4,7 +4,9 @@ public class ManagerRecord extends Record
     private ProjectInfo project;
     private String location;
     private static int recordIdNumber = 10000;
-    private String recordId = "MR";
+    private final String MR = "MR";
+    private String recordId;
+    private final String[] MRfields = {"firstName", "lastName", "empId", "mailId", "project", "location"};
 
     public ManagerRecord(String firstName, String lastName, int empId, String mailId, ProjectInfo project, String location)
     {
@@ -14,9 +16,21 @@ public class ManagerRecord extends Record
         this.createRecordId();
     }
 
-    public void createRecordId()
+    void createRecordId()
     {
-        this.recordId += Integer.toString(recordIdNumber++);
+        this.recordId = MR + Integer.toString(recordIdNumber++);
+    }
+
+    public boolean checkIfFieldExists(String aField)
+    {
+        for(int i = 0; i < MRfields.length; i++)
+        {
+            if(MRfields[i].equals(aField))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String toString()
@@ -26,7 +40,7 @@ public class ManagerRecord extends Record
 
     public ProjectInfo getProject()
     {
-        return project;
+        return this.project;
     }
 
     public void setProject(ProjectInfo project)
@@ -38,11 +52,16 @@ public class ManagerRecord extends Record
 
     public String getLocation()
     {
-        return location;
+        return this.location;
     }
 
     public void setLocation(String location)
     {
         this.location = location;
+    }
+
+    public String getRecordId()
+    {
+        return this.recordId;
     }
 }

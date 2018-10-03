@@ -3,7 +3,9 @@ public class EmployeeRecord extends Record
 
     private String projectId;
     private static int recordIdNumber = 10000;
-    private String recordId = "ER";
+    private final String ER = "ER";
+    private String recordId;
+    private final String[] ERfields = {"firstName", "lastName", "empId", "maildId", "projectId"};
 
     public EmployeeRecord(String firstName, String lastName, int empId, String mailId, String projectId)
     {
@@ -12,9 +14,21 @@ public class EmployeeRecord extends Record
         this.createRecordId();
     }
 
-    public void createRecordId()
+    void createRecordId()
     {
-        this.recordId += Integer.toString(recordIdNumber++);
+        this.recordId = ER + Integer.toString(recordIdNumber++);
+    }
+
+    public boolean checkIfFieldExists(String aField)
+    {
+        for(int i = 0; i < ERfields.length; i++)
+        {
+            if(ERfields[i].equals(aField))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String toString()
@@ -30,5 +44,10 @@ public class EmployeeRecord extends Record
     public void setProjectId(String projectId)
     {
         this.projectId = projectId;
+    }
+
+    public String getRecordId()
+    {
+        return this.recordId;
     }
 }

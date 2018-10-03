@@ -1,10 +1,12 @@
-public interface CenterServerInterface<T>
+import java.rmi.*;
+
+public interface CenterServerInterface<T> extends Remote
 {
-    public String createMRecord(String firstName, String lastName, int empId, String mailId, ProjectInfo project);
+    String createMRecord(String firstName, String lastName, int empId, String mailId, ProjectInfo project, String location) throws RemoteException;
 
-    public String createERecord(String firstName, String lastName, int empId, String mailId, String projectId, String location);
+    String createERecord(String firstName, String lastName, int empId, String mailId, String projectId) throws RemoteException;
 
-    public String getRecordCounts();
+    String getRecordCounts() throws RemoteException;
 
-    public String editRecord(String recordId, String fieldName, T newValue);
+    String editRecord(String recordId, String fieldName, T newValue) throws RemoteException;
 }
