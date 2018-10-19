@@ -3,6 +3,16 @@ package server;
 import java.rmi.*;
 import records.ProjectInfo;
 
+/**
+ * The Interface for the center server
+ *
+ * @author Hagop Awakian
+ * Assignment 1
+ * Course: SOEN 423
+ * Section: H
+ * Instructor: Dr. R. Jayakumar
+ * Fall 2018
+ */
 public interface CenterServerInterface<T> extends Remote
 {
     String createMRecord(String firstName, String lastName, int empId, String mailId, ProjectInfo project, String location) throws RemoteException;

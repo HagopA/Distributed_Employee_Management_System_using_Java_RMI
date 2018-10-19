@@ -16,21 +16,47 @@ import records.ManagerRecord;
 import records.ProjectInfo;
 import records.Record;
 
+/**
+ * Center server class implementation, implements the CenterServerInterface
+ *
+ * @author Hagop Awakian
+ * Assignment 1
+ * Course: SOEN 423
+ * Section: H
+ * Instructor: Dr. R. Jayakumar
+ * Fall 2018
+ */
 public class CenterServer<T> extends UnicastRemoteObject implements CenterServerInterface<T>
 {
-
+    /**
+     * Data members
+     */
     private HashMap<String, ArrayList<Record>> records = new HashMap<>();
     private Logger logger;
     private FileHandler fh;
     private String serverName;
     private int recordCounts;
 
+    /**
+     * Constructor
+     * @throws RemoteException
+     */
     public CenterServer() throws RemoteException
     {
         super();
         this.recordCounts = 0;
     }
 
+    /**
+     * Creates a manager record
+     * @param firstName First name of the manager
+     * @param lastName Last name of the manager
+     * @param empId Employee ID of the manager
+     * @param mailId Mail ID of the manager
+     * @param project Project information of the manager
+     * @param location Location of the manager
+     * @return Returns the message to indicate that a manager record has successfully been created
+     */
     public synchronized String createMRecord(String firstName, String lastName, int empId, String mailId, ProjectInfo project, String location)
     {
         Record aMRecord = new ManagerRecord(firstName, lastName, empId, mailId, project, location);
@@ -52,6 +78,15 @@ public class CenterServer<T> extends UnicastRemoteObject implements CenterServer
         return message;
     }
 
+    /**
+     * Creates an employee record
+     * @param firstName First name of the employee
+     * @param lastName Last name of the employee
+     * @param empId Employee ID of the employee
+     * @param mailId Mail ID of the employee
+     * @param projectId Project ID of the employee
+     * @return Returns the message to indicate that an employee record has successfully been created
+     */
     public synchronized String createERecord(String firstName, String lastName, int empId, String mailId, String projectId)
     {
         Record aERecord = new EmployeeRecord(firstName, lastName, empId, mailId, projectId);
@@ -78,6 +113,13 @@ public class CenterServer<T> extends UnicastRemoteObject implements CenterServer
         return this.serverName + " " + this.recordCounts;
     }
 
+    /**
+     * Will edit a field (variable) in a record given a record ID
+     * @param recordId Record ID that an HR manager wishes to modify
+     * @param fieldName Field name that an HR manager wishes to modify
+     * @param newValue New value of the field
+     * @return Returns a message, whether the modification was successful or not
+     */
     public synchronized String editRecord(String recordId, String fieldName, T newValue)
     {
         if(recordId == null || fieldName == null || newValue == null)
@@ -157,6 +199,11 @@ public class CenterServer<T> extends UnicastRemoteObject implements CenterServer
         return message;
     }
 
+    /**
+     * Validates the location when trying to modify to new value
+     * @param s New location
+     * @return Returns true if the new location is valid, false otherwise
+     */
     private boolean isValidLocation(String s)
     {
         switch (s)
@@ -169,6 +216,13 @@ public class CenterServer<T> extends UnicastRemoteObject implements CenterServer
         return false;
     }
 
+    /**
+     * Method to log information after update of a record
+     * @param message The message to log
+     * @param server Server that the logger is being called from. If the server is null, then simply log the message
+     *               as the log file with the server name has already been created previously. If it is not null, then
+     *               create the log file, name it after the server that is calling the method, and log the message.
+     */
     void log(String message, String server)
     {
         if(server == null)

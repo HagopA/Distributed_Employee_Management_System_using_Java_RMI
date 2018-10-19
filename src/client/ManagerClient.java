@@ -15,11 +15,28 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+/**
+ * Manager client class. It will run the multiple manager (threads) requests and is responsible for the flow of the
+ * program
+ *
+ * @author Hagop Awakian
+ * Assignment 1
+ * Course: SOEN 423
+ * Section: H
+ * Instructor: Dr. R. Jayakumar
+ * Fall 2018
+ */
 public class ManagerClient implements Runnable
 {
     private Logger logger;
     private FileHandler fh;
 
+    /**
+     * Check if the passed string, specifically an HR manager ID (ex: CA1234), is an integer. It is used to pass the
+     * 4 last characters of the HR manager ID string
+     * @param s An HR manager ID string
+     * @return Returns true if s is an integer, otherwise returns false
+     */
     public boolean isInteger(String s)
     {
         try
@@ -33,6 +50,11 @@ public class ManagerClient implements Runnable
         return true;
     }
 
+    /**
+     * Checks if it's a valid manager given the string as a manager ID
+     * @param s Manager ID
+     * @return Returns true if HR manager is from CA, US, or UK. Otherwise returns false
+     */
     public boolean isValidManager(String s)
     {
         switch (s.substring(0,2))
@@ -45,6 +67,10 @@ public class ManagerClient implements Runnable
         return false;
     }
 
+    /**
+     * Method to log information after update of a record
+     * @param message Message to log.
+     */
     public void log(String message)
     {
         if(this.logger == null)
@@ -72,8 +98,14 @@ public class ManagerClient implements Runnable
         }
     }
 
+    /**
+     * Run method for multithreaded execution
+     */
     public void run()
     {
+        /**
+         * Data members
+         */
         Registry CAregistry;
         Registry USregistry;
         Registry UKregistry;
@@ -87,7 +119,9 @@ public class ManagerClient implements Runnable
         int chosenOption;
         String associatedServer;
         String response;
-
+        /**
+         * Initialize Server registries
+         */
         try
         {
             CAregistry = LocateRegistry.getRegistry(2930);
@@ -118,6 +152,9 @@ public class ManagerClient implements Runnable
         System.out.println("---------------------DEMS---------------------\n");
         System.out.println("Welcome to the DEMS\n");
 
+        /**
+         * Main program loop, will exit if the use enters "e"
+         */
         while(!exitSystem)
         {
 
@@ -472,6 +509,9 @@ public class ManagerClient implements Runnable
         keyboard.close();
     }
 
+    /**
+     * Entry point of the program to begin interacting with the DEMS
+     */
     public static void main(String[] args)
     {
         ManagerClient mc1 = new ManagerClient();
