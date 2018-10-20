@@ -30,6 +30,7 @@ public class ManagerClient implements Runnable
 {
     private Logger logger;
     private FileHandler fh;
+    String managerId;
 
     /**
      * Check if the passed string, specifically an HR manager ID (ex: CA1234), is an integer. It is used to pass the
@@ -78,18 +79,19 @@ public class ManagerClient implements Runnable
             this.logger = Logger.getLogger(Thread.currentThread().getId() + "Client");
             try
             {
-                this.fh = new FileHandler("Client Logs\\" + Thread.currentThread().getId() + "_client_log.txt", true);
+                this.fh = new FileHandler("Client Logs\\" + this.managerId + "_client_log.txt", true);
                 this.fh.setFormatter((new SimpleFormatter()));
                 this.logger.addHandler(fh);
+                this.logger.setUseParentHandlers(false);
                 this.logger.info(message);
         }
             catch (IOException e)
             {
-                System.out.println("Error: " + e.getMessage() + ". The file could not been created");
+                System.out.println("IO Error: " + e.getMessage() + ". The file could not been created");
             }
             catch (SecurityException e)
             {
-                System.out.println("Error: " + e.getMessage() + ". The file could not been created");
+                System.out.println("Security Error: " + e.getMessage() + ". The file could not been created");
             }
         }
         else
@@ -113,14 +115,13 @@ public class ManagerClient implements Runnable
         CenterServerInterface US = null;
         CenterServerInterface UK = null;
         Scanner keyboard = new Scanner(System.in);
-        String managerId;
         boolean exitSystem = false;
-        boolean flag = false;
+        boolean logout;
         int chosenOption;
         String associatedServer;
         String response;
         /**
-         * Initialize Server registries
+         * Initialize registries
          */
         try
         {
@@ -161,6 +162,7 @@ public class ManagerClient implements Runnable
             System.out.print("Please enter your manager ID to start using the system, or enter \"e\" to exit the system: ");
             managerId = keyboard.next().toUpperCase();
             keyboard.nextLine();
+            logout = false;
 
             if(managerId.substring(0,1).equalsIgnoreCase("e"))
             {
@@ -177,7 +179,7 @@ public class ManagerClient implements Runnable
             associatedServer = managerId.substring(0,2);
             this.log(managerId + " has started using the system");
 
-            while(!flag)
+            while(!logout)
             {
                 System.out.println("Please choose one of the following options to perform in the DEMS: ");
                 System.out.println("\t1. Create a manager record");
@@ -201,7 +203,7 @@ public class ManagerClient implements Runnable
                     case 1:
                         String firstName;
                         String lastName;
-                        int empId;
+                        int empId = 0;
                         String mailId;
                         String projectId;
                         String clientName;
@@ -214,9 +216,21 @@ public class ManagerClient implements Runnable
                         firstName = keyboard.nextLine();
                         System.out.println("Please enter the last name: ");
                         lastName = keyboard.nextLine();
-                        System.out.println("Please enter the employee ID: ");
-                        empId = keyboard.nextInt();
-                        keyboard.nextLine();
+                        boolean NaN = true;
+                        while(NaN)
+                        {
+                            try
+                            {
+                                System.out.println("Please enter the employee ID: ");
+                                empId = keyboard.nextInt();
+                                keyboard.nextLine();
+                                NaN = false;
+                            }
+                            catch(InputMismatchException e)
+                            {
+                                System.out.println("Error: You have not entered a number, try again.");
+                            }
+                        }
                         System.out.println("Please enter the mailId: ");
                         mailId = keyboard.next();
                         keyboard.nextLine();
@@ -281,13 +295,27 @@ public class ManagerClient implements Runnable
                         }
                         break;
                     case 2:
+                        empId = 0;
                         System.out.println("You have chosen to create an employee record.");
                         System.out.println("Please enter the first name: ");
                         firstName = keyboard.nextLine();
                         System.out.println("Please enter the last name: ");
                         lastName = keyboard.nextLine();
-                        System.out.println("Please enter the employee ID: ");
-                        empId = keyboard.nextInt();
+                        boolean NaN2 = true;
+                        while(NaN2)
+                        {
+                            try
+                            {
+                                System.out.println("Please enter the employee ID: ");
+                                empId = keyboard.nextInt();
+                                keyboard.nextLine();
+                                NaN2 = false;
+                            }
+                            catch(InputMismatchException e)
+                            {
+                                System.out.println("Error: You have not entered a number, try again.");
+                            }
+                        }
                         System.out.println("Please enter the mailId: ");
                         mailId = keyboard.next();
                         System.out.println("Please enter the project ID: ");
@@ -495,8 +523,7 @@ public class ManagerClient implements Runnable
 
                     if(response.substring(0,1).equalsIgnoreCase("n"))
                     {
-                        flag = true;
-                        exitSystem = true;
+                        logout = true;
                         toContinue = false;
                     }
                     else if(response.substring(0,1).equalsIgnoreCase("y"))

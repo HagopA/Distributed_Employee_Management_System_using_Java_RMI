@@ -1,5 +1,7 @@
 package server;
 
+import UDP.*;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -43,5 +45,12 @@ public class Server
         UKresgistry.bind("UK", UK);
         UK.log("UK server has started", "UK");
         System.out.println("UK server has started");
+
+        /**
+         * Start UDP for all 3 servers
+         */
+        new Thread(new CAServerThread(2930)).start();
+        new Thread(new USServerThread(2931)).start();
+        new Thread(new UKServerThread(2932)).start();
     }
 }

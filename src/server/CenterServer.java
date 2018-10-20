@@ -1,6 +1,7 @@
 package server;
 
 import java.io.IOException;
+import java.net.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -108,7 +109,160 @@ public class CenterServer<T> extends UnicastRemoteObject implements CenterServer
         return message;
     }
 
+    /**
+     * Retrieves the number of records in each server using UDP/IP protocol
+     * @return Returns a String indicating the number of records in each server
+     */
     public synchronized String getRecordCounts()
+    {
+        String CARecords = "";
+        String USRecords = "";
+        String UKRecords = "";
+
+        if(this.serverName.equalsIgnoreCase("CA"))
+        {
+            CARecords = this.getLocalCounts();
+
+            try
+            {
+                DatagramSocket socket = new DatagramSocket();
+                byte[] send = new byte[1024];
+                byte[] receive = new byte[1024];
+                InetAddress ipAddress = InetAddress.getByName("localhost");
+                send = "".getBytes();
+
+                /**
+                 * Requesting US number of records
+                 */
+                DatagramPacket USsendPacket = new DatagramPacket(send, send.length, ipAddress, 2931);
+                socket.send(USsendPacket);
+                DatagramPacket USreceivePacket = new DatagramPacket(receive, receive.length);
+                socket.receive(USreceivePacket);
+                String USRecordCounts = new String(USreceivePacket.getData(), USreceivePacket.getOffset(), USreceivePacket.getLength());
+                USRecords = USRecordCounts;
+
+                /**
+                 * Requesting UK number of records
+                 */
+                DatagramPacket UKsendPacket = new DatagramPacket(send, send.length, ipAddress, 2932);
+                socket.send(UKsendPacket);
+                DatagramPacket UKreceivePacket = new DatagramPacket(receive, receive.length);
+                socket.receive(UKreceivePacket);
+                String UKRecordCounts = new String(UKreceivePacket.getData(), UKreceivePacket.getOffset(), UKreceivePacket.getLength());
+                UKRecords = UKRecordCounts;
+            }
+            catch (SocketException e)
+            {
+                e.printStackTrace();
+            }
+            catch (UnknownHostException e)
+            {
+                e.printStackTrace();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else if(this.serverName.equalsIgnoreCase("US"))
+        {
+            USRecords = this.getLocalCounts();
+
+            try
+            {
+                DatagramSocket socket = new DatagramSocket();
+                byte[] send = new byte[1024];
+                byte[] receive = new byte[1024];
+                InetAddress ipAddress = InetAddress.getByName("localhost");
+                send = "".getBytes();
+
+                /**
+                 * Requesting CA number of records
+                 */
+                DatagramPacket CAsendPacket = new DatagramPacket(send, send.length, ipAddress, 2930);
+                socket.send(CAsendPacket);
+                DatagramPacket CAreceivePacket = new DatagramPacket(receive, receive.length);
+                socket.receive(CAreceivePacket);
+                String CARecordCounts = new String(CAreceivePacket.getData(), CAreceivePacket.getOffset(), CAreceivePacket.getLength());
+                CARecords = CARecordCounts;
+
+                /**
+                 * Requesting UK number of records
+                 */
+                DatagramPacket UKsendPacket = new DatagramPacket(send, send.length, ipAddress, 2932);
+                socket.send(UKsendPacket);
+                DatagramPacket UKreceivePacket = new DatagramPacket(receive, receive.length);
+                socket.receive(UKreceivePacket);
+                String UKRecordCounts = new String(UKreceivePacket.getData(), UKreceivePacket.getOffset(), UKreceivePacket.getLength());
+                UKRecords = UKRecordCounts;
+            }
+            catch (SocketException e)
+            {
+                e.printStackTrace();
+            }
+            catch (UnknownHostException e)
+            {
+                e.printStackTrace();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else if(this.serverName.equalsIgnoreCase("UK"))
+        {
+            UKRecords = this.getLocalCounts();
+
+            try
+            {
+                DatagramSocket socket = new DatagramSocket();
+                byte[] send = new byte[1024];
+                byte[] receive = new byte[1024];
+                InetAddress ipAddress = InetAddress.getByName("localhost");
+                send = "".getBytes();
+
+                /**
+                 * Requesting CA number of records
+                 */
+                DatagramPacket CAsendPacket = new DatagramPacket(send, send.length, ipAddress, 2930);
+                socket.send(CAsendPacket);
+                DatagramPacket CAreceivePacket = new DatagramPacket(receive, receive.length);
+                socket.receive(CAreceivePacket);
+                String CARecordCounts = new String(CAreceivePacket.getData(), CAreceivePacket.getOffset(), CAreceivePacket.getLength());
+                CARecords = CARecordCounts;
+
+                /**
+                 * Requesting US number of records
+                 */
+                DatagramPacket USsendPacket = new DatagramPacket(send, send.length, ipAddress, 2931);
+                socket.send(USsendPacket);
+                DatagramPacket USreceivePacket = new DatagramPacket(receive, receive.length);
+                socket.receive(USreceivePacket);
+                String USRecordCounts = new String(USreceivePacket.getData(), USreceivePacket.getOffset(), USreceivePacket.getLength());
+                USRecords = USRecordCounts;
+            }
+            catch (SocketException e)
+            {
+                e.printStackTrace();
+            }
+            catch (UnknownHostException e)
+            {
+                e.printStackTrace();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        return CARecords + " " + USRecords + " " + UKRecords;
+    }
+
+    /**
+     * Used to get the number of records in the calling server
+     * @return Returns the number of records in the server (object) that is calling it
+     */
+    public synchronized String getLocalCounts()
     {
         return this.serverName + " " + this.recordCounts;
     }
@@ -225,10 +379,16 @@ public class CenterServer<T> extends UnicastRemoteObject implements CenterServer
      */
     void log(String message, String server)
     {
+        /**
+         * If the server is null, then it means that the file has already been created and therefore simply log the message
+         */
         if(server == null)
         {
             this.logger.info(message);
         }
+        /**
+         * Otherwise, create the file and log the message
+         */
         else
         {
             this.serverName = server;
@@ -238,15 +398,16 @@ public class CenterServer<T> extends UnicastRemoteObject implements CenterServer
                 this.fh = new FileHandler( "Server Logs\\" + server + "_server_log.txt", true);
                 this.fh.setFormatter((new SimpleFormatter()));
                 this.logger.addHandler(fh);
+                this.logger.setUseParentHandlers(false);
                 this.logger.info(message);
             }
             catch (IOException e)
             {
-                System.out.println("Error: " + e.getMessage() + ". The file could not been created");
+                System.out.println("IO Error: " + e.getMessage() + ". The file could not been created");
             }
             catch (SecurityException e)
             {
-                System.out.println("Error: " + e.getMessage() + ". The file could not been created");
+                System.out.println("Security Error: " + e.getMessage() + ". The file could not been created");
             }
         }
     }

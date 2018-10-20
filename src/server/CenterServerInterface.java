@@ -22,4 +22,8 @@ public interface CenterServerInterface<T> extends Remote
     String getRecordCounts() throws RemoteException;
 
     String editRecord(String recordId, String fieldName, T newValue) throws RemoteException;
+
+    String getLocalCounts() throws RemoteException;
+
+//    String transferRecord(String managerID, String recordID, String remoteCenterServerName);
 }
