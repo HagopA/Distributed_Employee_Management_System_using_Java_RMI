@@ -1,36 +1,50 @@
 package UDP;
 
-import server.CenterServerInterface;
+import org.omg.CORBA.ORB;
+import org.omg.CosNaming.NamingContextExt;
+import org.omg.CosNaming.NamingContextExtHelper;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
-public class UKServerThread implements Runnable
+import records.EmployeeRecord;
+import records.ManagerRecord;
+import server.centerServerInterfaceIDL.CenterServerInterfaceHelper;
+import server.centerServerInterfaceIDL.CenterServerInterfaceOperations;
+/**
+ * UK thread that will handle UDP requests
+ *
+ * @author Hagop Awakian
+ * Assignment 2
+ * Course: SOEN 423
+ * Section: H
+ * Instructor: Dr. R. Jayakumar
+ * Fall 2018
+ */
+public class UKServerThread implements Runnable, Serializable
 {
     /**
      * Data members
      */
     private DatagramSocket socket;
-    Registry registry;
-    CenterServerInterface server;
+    CenterServerInterfaceOperations server;
 
     /**
      * Constructor
      * @param port Port number to locate the registry
-     * @throws RemoteException
-     * @throws NotBoundException
      * @throws SocketException
      */
-    public UKServerThread(int port) throws RemoteException, NotBoundException, SocketException
+    public UKServerThread(int port, ORB orb) throws Exception
     {
-        registry = LocateRegistry.getRegistry(port);
-        server = (CenterServerInterface) registry.lookup("UK");
+        org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
+        NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
+        String name = "UK";
+        server = CenterServerInterfaceHelper.narrow(ncRef.resolve_str(name));
         socket = new DatagramSocket(port);
     }
 
@@ -42,18 +56,57 @@ public class UKServerThread implements Runnable
         try
         {
             byte[] receive = new byte[1024];
-            byte[] send;
+            byte[] send = null;
+            String methodToInvoke = "";
 
-            while(true)
+            while (true)
             {
                 DatagramPacket request = new DatagramPacket(receive, receive.length);
                 socket.receive(request);
-                send = (server.getLocalCounts()).getBytes();
+                methodToInvoke = "";
+
+                for (int i = 0; i < request.getLength(); i++)
+                {
+                    methodToInvoke += Character.toString((char) request.getData()[i]);
+                }
+
+                if (methodToInvoke.equalsIgnoreCase("getRecordCounts"))
+                {
+                    send = (server.getLocalCounts()).getBytes();
+                }
+                else if (methodToInvoke.equalsIgnoreCase("searchIfRecordExists:"))
+                {
+                    send = Boolean.toString(server.searchIfRecordExists(methodToInvoke.substring(22))).getBytes();
+                }
+                else
+                {
+                    ByteArrayInputStream in = new ByteArrayInputStream(receive);
+                    ObjectInputStream iStream = new ObjectInputStream(in);
+                    Object o = iStream.readObject();
+
+                    if (o instanceof ManagerRecord)
+                    {
+                        ManagerRecord newRecord = (ManagerRecord) o;
+                        send = (server.createMRecord("", newRecord.getFirstName(), newRecord.getLastName(),
+                                newRecord.getEmpId(), newRecord.getMailId(), newRecord.getProject(),
+                                newRecord.getLocation()).getBytes());
+                    } else if (o instanceof EmployeeRecord)
+                    {
+                        EmployeeRecord newRecord = (EmployeeRecord) o;
+                        send = (server.createERecord("", newRecord.getFirstName(), newRecord.getLastName(),
+                                newRecord.getEmpId(), newRecord.getMailId(), newRecord.getProjectId())).getBytes();
+                    }
+                    iStream.close();
+                }
                 DatagramPacket reply = new DatagramPacket(send, send.length, request.getAddress(), request.getPort());
                 socket.send(reply);
             }
         }
         catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e)
         {
             e.printStackTrace();
         }

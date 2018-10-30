@@ -1,0 +1,22 @@
+module server
+{
+    module centerServerInterfaceIDL
+    {
+        struct ProjectInfo
+        {
+            string projectId;
+            string clientName;
+            string projectName;
+        };
+        interface CenterServerInterface
+        {
+            string createMRecord(in string managerId, in string firstName, in string lastName, in long empId, in string mailId, in ProjectInfo project, in string location);
+            string createERecord(in string managerId, in string firstName, in string lastName, in long empId, in string mailId, in string projectId);
+            string getRecordCounts(in string managerId);
+            string editRecord(in string managerId, in string recordId, in string fieldName, in string newValue);
+            string transferRecords(in string managerId, in string recordId, in string remoteCenterServerName);
+            string getLocalCounts();
+            boolean searchIfRecordExists(in string recordId);
+        };
+    };
+};
