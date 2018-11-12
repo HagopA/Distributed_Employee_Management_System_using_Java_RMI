@@ -4,7 +4,7 @@ package records;
  * Employee record class
  *
  * @author Hagop Awakian
- * Assignment 1
+ * Assignment 2
  * Course: SOEN 423
  * Section: H
  * Instructor: Dr. R. Jayakumar
@@ -19,7 +19,7 @@ public class EmployeeRecord extends Record
     private static int recordIdNumber = 10000;
     private final String ER = "ER";
     private String recordId;
-    private final String[] ERfields = {"firstName", "lastName", "empId", "maildId", "projectId"};
+    private final String[] ERfields = {"firstName", "lastName", "empId", "mailId", "projectId"};
 
     /**
      * Constructor

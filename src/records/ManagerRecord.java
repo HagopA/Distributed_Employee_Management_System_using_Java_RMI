@@ -1,12 +1,13 @@
 package records;
 
 import java.io.Serializable;
+import server.centerServerInterfaceIDL.ProjectInfo;
 
 /**
  * Manager record class
  *
  * @author Hagop Awakian
- * Assignment 1
+ * Assignment 2
  * Course: SOEN 423
  * Section: H
  * Instructor: Dr. R. Jayakumar
@@ -22,7 +23,7 @@ public class ManagerRecord extends Record implements Serializable
     private static int recordIdNumber = 10000;
     private final String MR = "MR";
     private String recordId;
-    private final String[] MRfields = {"firstName", "lastName", "empId", "mailId", "project", "location"};
+    private final String[] MRfields = {"firstName", "lastName", "empId", "mailId", "projectId", "clientName", "projectName", "location"};
 
     /**
      * Constructor
@@ -36,7 +37,7 @@ public class ManagerRecord extends Record implements Serializable
     public ManagerRecord(String firstName, String lastName, int empId, String mailId, ProjectInfo project, String location)
     {
         super(firstName, lastName, empId, mailId);
-        this.project = new ProjectInfo(project.getProjectId(), project.getClientName(), project.getProjectName());
+        this.project = new ProjectInfo(project.projectId, project.clientName, project.projectName);
         this.location = location;
         this.createRecordId();
     }
@@ -71,7 +72,11 @@ public class ManagerRecord extends Record implements Serializable
      */
     public String toString()
     {
-        return super.toString() + "\n" + project.toString() + " " + "Location: " + this.getLocation() + " records.Record ID: " + this.getRecordId();
+        return super.toString() + "\n" + "Project Information: \n" +
+                "\tProject ID: " + this.project.projectId + "\n" +
+                "\tClient Name: " + this.project.clientName + "\n" +
+                "\tProject Name: " + this.project.projectName + "\n" +
+                " " + "Location: " + this.getLocation() + " records.Record ID: " + this.getRecordId();
     }
 
     /**
@@ -89,9 +94,39 @@ public class ManagerRecord extends Record implements Serializable
      */
     public void setProject(ProjectInfo project)
     {
-        this.project.setProjectId(project.getProjectId());
-        this.project.setClientName(project.getClientName());
-        this.project.setProjectName(project.getProjectName());
+        this.project.projectId = project.projectId;
+        this.project.clientName = project.clientName;
+        this.project.projectName = project.projectName;
+    }
+
+    public String getProjectId()
+    {
+        return this.project.projectId;
+    }
+
+    public String getClientName()
+    {
+        return this.project.clientName;
+    }
+
+    public String getProjectName()
+    {
+        return this.project.projectName;
+    }
+
+    public void setProjectId(String projectId)
+    {
+        this.project.projectId = projectId;
+    }
+
+    public void setProjectClientName(String clientName)
+    {
+        this.project.clientName = clientName;
+    }
+
+    public void setProjectName(String projectName)
+    {
+        this.project.projectName = projectName;
     }
 
     /**

@@ -4,7 +4,7 @@ package records;
  * Abstract Record class that stores the basic building blocks of a record
  *
  * @author Hagop Awakian
- * Assignment 1
+ * Assignment 2
  * Course: SOEN 423
  * Section: H
  * Instructor: Dr. R. Jayakumar
