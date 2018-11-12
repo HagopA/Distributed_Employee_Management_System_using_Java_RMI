@@ -7,7 +7,6 @@ import org.omg.CosNaming.NamingContextExtHelper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -27,7 +26,7 @@ import server.centerServerInterfaceIDL.CenterServerInterfaceOperations;
  * Instructor: Dr. R. Jayakumar
  * Fall 2018
  */
-public class USServerThread implements Runnable, Serializable
+public class USServerThread implements Runnable
 {
     /**
      * Data members
@@ -74,12 +73,15 @@ public class USServerThread implements Runnable, Serializable
                 if (methodToInvoke.equalsIgnoreCase("getRecordCounts"))
                 {
                     send = (server.getLocalCounts()).getBytes();
-                } else if (methodToInvoke.equalsIgnoreCase("searchIfRecordExists:"))
+                }
+                else if (methodToInvoke.equalsIgnoreCase("searchIfRecordExists:"))
                 {
                     send = Boolean.toString(server.searchIfRecordExists(methodToInvoke.substring(22))).getBytes();
-                } else
+                }
+                else
                 {
-                    ByteArrayInputStream in = new ByteArrayInputStream(receive);
+                    byte [] data = request.getData();
+                    ByteArrayInputStream in = new ByteArrayInputStream(data);
                     ObjectInputStream iStream = new ObjectInputStream(in);
                     Object o = iStream.readObject();
 

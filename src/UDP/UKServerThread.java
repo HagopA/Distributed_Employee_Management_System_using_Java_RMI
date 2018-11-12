@@ -7,7 +7,6 @@ import org.omg.CosNaming.NamingContextExtHelper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -26,7 +25,7 @@ import server.centerServerInterfaceIDL.CenterServerInterfaceOperations;
  * Instructor: Dr. R. Jayakumar
  * Fall 2018
  */
-public class UKServerThread implements Runnable, Serializable
+public class UKServerThread implements Runnable
 {
     /**
      * Data members
@@ -80,7 +79,8 @@ public class UKServerThread implements Runnable, Serializable
                 }
                 else
                 {
-                    ByteArrayInputStream in = new ByteArrayInputStream(receive);
+                    byte [] data = request.getData();
+                    ByteArrayInputStream in = new ByteArrayInputStream(data);
                     ObjectInputStream iStream = new ObjectInputStream(in);
                     Object o = iStream.readObject();
 

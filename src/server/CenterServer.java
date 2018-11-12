@@ -3,7 +3,6 @@ package server;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +26,7 @@ import server.centerServerInterfaceIDL.*;
  * Instructor: Dr. R. Jayakumar
  * Fall 2018
  */
-public class CenterServer extends CenterServerInterfacePOA implements Serializable
+public class CenterServer extends CenterServerInterfacePOA
 {
     /**
      * Data members
@@ -450,13 +449,13 @@ public class CenterServer extends CenterServerInterfacePOA implements Serializab
 
                                 ManagerRecord sendRecord = new ManagerRecord(firstName, lastName, empId, mailId, project, location);
                                 oOutputStream.writeObject(sendRecord);
+                                oOutputStream.close();
                                 byte[] outputData = bOutputStream.toByteArray();
 
                                 sendPacket = new DatagramPacket(outputData, outputData.length, ipAddress, portNum);
                                 socket.send(sendPacket);
                                 receivePacket = new DatagramPacket(receive, receive.length);
                                 socket.receive(receivePacket);
-
                             }
                             else if(recordId.substring(0,2).equalsIgnoreCase("ER"))
                             {
@@ -471,13 +470,13 @@ public class CenterServer extends CenterServerInterfacePOA implements Serializab
 
                                 EmployeeRecord sendRecord = new EmployeeRecord(firstName, lastName, empId, mailId, projectId);
                                 oOutputStream.writeObject(sendRecord);
+                                oOutputStream.close();
                                 byte[] outputData = bOutputStream.toByteArray();
 
                                 sendPacket = new DatagramPacket(outputData, outputData.length, ipAddress, portNum);
                                 socket.send(sendPacket);
                                 receivePacket = new DatagramPacket(receive, receive.length);
                                 socket.receive(receivePacket);
-                                oOutputStream.close();
                             }
                             deleteRecord = true;
                             break;

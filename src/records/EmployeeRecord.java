@@ -19,7 +19,7 @@ public class EmployeeRecord extends Record
     private static int recordIdNumber = 10000;
     private final String ER = "ER";
     private String recordId;
-    private final String[] ERfields = {"firstName", "lastName", "empId", "maildId", "projectId"};
+    private final String[] ERfields = {"firstName", "lastName", "empId", "mailId", "projectId"};
 
     /**
      * Constructor
