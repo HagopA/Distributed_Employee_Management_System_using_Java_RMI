@@ -1,5 +1,9 @@
 package client;
 
+import client.CAimport.CenterServerInterface;
+import client.CAimport.CenterServerService;
+import records.ProjectInfo;
+
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -7,22 +11,12 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import org.omg.CORBA.ORB;
-import org.omg.CORBA.ORBPackage.InvalidName;
-import org.omg.CosNaming.NamingContextExt;
-import org.omg.CosNaming.NamingContextExtHelper;
-import org.omg.CosNaming.NamingContextPackage.CannotProceed;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
-import server.centerServerInterfaceIDL.CenterServerInterface;
-import server.centerServerInterfaceIDL.CenterServerInterfaceHelper;
-import server.centerServerInterfaceIDL.ProjectInfo;
-
 /**
  * Manager client class. It will run the multiple manager (threads) requests and is responsible for the flow of the
  * program
  *
  * @author Hagop Awakian
- * Assignment 2
+ * Assignment 3
  * Course: SOEN 423
  * Section: H
  * Instructor: Dr. R. Jayakumar
@@ -117,6 +111,15 @@ public class ManagerClient implements Runnable
         String associatedServer;
         String response;
 
+        CenterServerService CAservice = new CenterServerService();
+        client.USimport.CenterServerService USservice = new client.USimport.CenterServerService();
+        client.UKimport.CenterServerService UKservice = new client.UKimport.CenterServerService();
+
+        CenterServerInterface CAserver = CAservice.getCenterServerPort();
+        client.USimport.CenterServerInterface USserver = USservice.getCenterServerPort();
+        client.UKimport.CenterServerInterface UKserver = UKservice.getCenterServerPort();
+
+
         System.out.println("---------------------DEMS---------------------\n");
         System.out.println("Welcome to the DEMS\n");
 
@@ -176,7 +179,9 @@ public class ManagerClient implements Runnable
                         String projectId;
                         String clientName;
                         String projectName;
-                        ProjectInfo aProject;
+                        client.CAimport.ProjectInfo CAproject;
+                        client.USimport.ProjectInfo USproject;
+                        client.UKimport.ProjectInfo UKproject;
                         String location;
 
                         System.out.println("You have chosen to create a manager record.");
@@ -213,10 +218,13 @@ public class ManagerClient implements Runnable
                         System.out.println("Please enter the location: ");
                         location = keyboard.next();
                         keyboard.nextLine();
-                        aProject = new ProjectInfo(projectId, clientName, projectName);
                         if(associatedServer.equals("CA"))
                         {
-                            System.out.println(centerServerImplCA.createMRecord(managerId, firstName, lastName, empId, mailId, aProject, location));
+                            CAproject = new client.CAimport.ProjectInfo();
+                            CAproject.setProjectId(projectId);
+                            CAproject.setClientName(clientName);
+                            CAproject.setProjectName(projectName);
+                            System.out.println(CAserver.createMRecord(managerId, firstName, lastName, empId, mailId, CAproject, location));
                             this.log(managerId + " created a manager record." +
                                     "First name: " + firstName + " Last name: " + lastName + " Employee ID: " + empId +
                                     " Mail ID: " + mailId + " Project ID: " + projectId + " Project client name: " + clientName +
@@ -224,7 +232,11 @@ public class ManagerClient implements Runnable
                         }
                         else if(associatedServer.equals("US"))
                         {
-                            System.out.println(centerServerImplUS.createMRecord(managerId, firstName, lastName, empId, mailId, aProject, location));
+                            USproject = new client.USimport.ProjectInfo();
+                            USproject.setProjectId(projectId);
+                            USproject.setClientName(clientName);
+                            USproject.setProjectName(projectName);
+                            System.out.println(USserver.createMRecord(managerId, firstName, lastName, empId, mailId, USproject, location));
                             this.log(managerId + " created a manager record." +
                                     "First name: " + firstName + " Last name: " + lastName + " Employee ID: " + empId +
                                     " Mail ID: " + mailId + " Project ID: " + projectId + " Project client name: " + clientName +
@@ -232,7 +244,11 @@ public class ManagerClient implements Runnable
                         }
                         else if(associatedServer.equals("UK"))
                         {
-                            System.out.println(centerServerImplUK.createMRecord(managerId, firstName, lastName, empId, mailId, aProject, location));
+                            UKproject = new client.UKimport.ProjectInfo();
+                            UKproject.setProjectId(projectId);
+                            UKproject.setClientName(clientName);
+                            UKproject.setProjectName(projectName);
+                            System.out.println(UKserver.createMRecord(managerId, firstName, lastName, empId, mailId, UKproject, location));
                             this.log(managerId + " created a manager record." +
                                     "First name: " + firstName + " Last name: " + lastName + " Employee ID: " + empId +
                                     " Mail ID: " + mailId + " Project ID: " + projectId + " Project client name: " + clientName +
@@ -269,21 +285,21 @@ public class ManagerClient implements Runnable
 
                         if(associatedServer.equals("CA"))
                         {
-                            System.out.println(centerServerImplCA.createERecord(managerId, firstName, lastName, empId, mailId, projectId));
+                            System.out.println(CAserver.createERecord(managerId, firstName, lastName, empId, mailId, projectId));
                             this.log(managerId + " created a employee record." +
                                     "First name: " + firstName + " Last name: " + lastName + " Employee ID: " + empId +
                                     " Mail ID: " + mailId + " Project ID: " + projectId);
                         }
                         else if(associatedServer.equals("US"))
                         {
-                            System.out.println(centerServerImplUS.createERecord(managerId, firstName, lastName, empId, mailId, projectId));
+                            System.out.println(USserver.createERecord(managerId, firstName, lastName, empId, mailId, projectId));
                             this.log(managerId + " created a employee record." +
                                     "First name: " + firstName + " Last name: " + lastName + " Employee ID: " + empId +
                                     " Mail ID: " + mailId + " Project ID: " + projectId);
                         }
                         else if(associatedServer.equals("UK"))
                         {
-                            System.out.println(centerServerImplUK.createERecord(managerId, firstName, lastName, empId, mailId, projectId));
+                            System.out.println(UKserver.createERecord(managerId, firstName, lastName, empId, mailId, projectId));
                             this.log(managerId + " created a employee record." +
                                     "First name: " + firstName + " Last name: " + lastName + " Employee ID: " + empId +
                                     " Mail ID: " + mailId + " Project ID: " + projectId);
@@ -294,19 +310,19 @@ public class ManagerClient implements Runnable
 
                         if(associatedServer.equals("CA"))
                         {
-                            String message = centerServerImplCA.getRecordCounts(managerId);
+                            String message = CAserver.getRecordCounts(managerId);
                             System.out.println(message);
                             this.log(message);
                         }
                         else if(associatedServer.equals("US"))
                         {
-                            String message = centerServerImplUS.getRecordCounts(managerId);
+                            String message = USserver.getRecordCounts(managerId);
                             System.out.println(message);
                             this.log(message);
                         }
                         else if(associatedServer.equals("UK"))
                         {
-                            String message = centerServerImplUK.getRecordCounts(managerId);
+                            String message = UKserver.getRecordCounts(managerId);
                             System.out.println(message);
                             this.log(message);
                         }
@@ -317,7 +333,6 @@ public class ManagerClient implements Runnable
                         String recordId;
                         String fieldName;
                         String newValue;
-                        ProjectInfo newValueProject;
                         System.out.println("Please enter the record ID: ");
                         recordId = keyboard.next().toUpperCase();
 
@@ -337,19 +352,19 @@ public class ManagerClient implements Runnable
 
                         if(associatedServer.equals("CA"))
                         {
-                            String message = centerServerImplCA.editRecord(managerId, recordId, fieldName, newValue);
+                            String message = CAserver.editRecord(managerId, recordId, fieldName, newValue);
                             System.out.println(message);
                             this.log(message);
                         }
                         else if(associatedServer.equals("US"))
                         {
-                            String message = centerServerImplUS.editRecord(managerId, recordId, fieldName, newValue);
+                            String message = USserver.editRecord(managerId, recordId, fieldName, newValue);
                             System.out.println(message);
                             this.log(message);
                         }
                         else if(associatedServer.equals("UK"))
                         {
-                            String message = centerServerImplUK.editRecord(managerId, recordId, fieldName, newValue);
+                            String message = UKserver.editRecord(managerId, recordId, fieldName, newValue);
                             System.out.println(message);
                             this.log(message);
                         }
@@ -365,19 +380,19 @@ public class ManagerClient implements Runnable
 
                         if(associatedServer.equals("CA"))
                         {
-                            String message = centerServerImplCA.transferRecords(managerId, recordID, remoteCenterServerName);
+                            String message = CAserver.transferRecords(managerId, recordID, remoteCenterServerName);
                             System.out.println(message);
                             this.log(message);
                         }
                         else if(associatedServer.equals("US"))
                         {
-                            String message = centerServerImplUS.transferRecords(managerId, recordID, remoteCenterServerName);
+                            String message = USserver.transferRecords(managerId, recordID, remoteCenterServerName);
                             System.out.println(message);
                             this.log(message);
                         }
                         else if(associatedServer.equals("UK"))
                         {
-                            String message = centerServerImplUK.transferRecords(managerId, recordID, remoteCenterServerName);
+                            String message = UKserver.transferRecords(managerId, recordID, remoteCenterServerName);
                             System.out.println(message);
                             this.log(message);
                         }
@@ -408,47 +423,11 @@ public class ManagerClient implements Runnable
         keyboard.close();
     }
 
-    static CenterServerInterface centerServerImplCA;
-    static CenterServerInterface centerServerImplUS;
-    static CenterServerInterface centerServerImplUK;
-
     /**
      * Entry point of the program to begin interacting with the DEMS
      */
     public static void main(String[] args)
     {
-        ORB orb;
-        org.omg.CORBA.Object objRef;
-        NamingContextExt ncRef;
-        final String nameCA = "CA";
-        final String nameUS = "US";
-        final String nameUK = "UK";
-
-        try
-        {
-            orb = ORB.init(args, null);
-            objRef = orb.resolve_initial_references("NameService");
-            ncRef = NamingContextExtHelper.narrow(objRef);
-            centerServerImplCA = CenterServerInterfaceHelper.narrow(ncRef.resolve_str(nameCA));
-            centerServerImplUS = CenterServerInterfaceHelper.narrow(ncRef.resolve_str(nameUS));
-            centerServerImplUK = CenterServerInterfaceHelper.narrow(ncRef.resolve_str(nameUK));
-        }
-        catch (InvalidName invalidName)
-        {
-            invalidName.printStackTrace();
-        }
-        catch (CannotProceed cannotProceed)
-        {
-            cannotProceed.printStackTrace();
-        }
-        catch (org.omg.CosNaming.NamingContextPackage.InvalidName invalidName)
-        {
-            invalidName.printStackTrace();
-        }
-        catch (NotFound notFound)
-        {
-            notFound.printStackTrace();
-        }
 
         ManagerClient mc1 = new ManagerClient();
         Thread t1 = new Thread(mc1);

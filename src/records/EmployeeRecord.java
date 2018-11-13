@@ -1,16 +1,18 @@
 package records;
 
+import java.io.Serializable;
+
 /**
  * Employee record class
  *
  * @author Hagop Awakian
- * Assignment 2
+ * Assignment 3
  * Course: SOEN 423
  * Section: H
  * Instructor: Dr. R. Jayakumar
  * Fall 2018
  */
-public class EmployeeRecord extends Record
+public class EmployeeRecord extends Record implements Serializable
 {
     /**
      * Data members

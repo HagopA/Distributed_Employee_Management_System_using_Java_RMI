@@ -1,13 +1,12 @@
 package records;
 
 import java.io.Serializable;
-import server.centerServerInterfaceIDL.ProjectInfo;
 
 /**
  * Manager record class
  *
  * @author Hagop Awakian
- * Assignment 2
+ * Assignment 3
  * Course: SOEN 423
  * Section: H
  * Instructor: Dr. R. Jayakumar
@@ -37,7 +36,7 @@ public class ManagerRecord extends Record implements Serializable
     public ManagerRecord(String firstName, String lastName, int empId, String mailId, ProjectInfo project, String location)
     {
         super(firstName, lastName, empId, mailId);
-        this.project = new ProjectInfo(project.projectId, project.clientName, project.projectName);
+        this.project = new ProjectInfo(project.getProjectId(), project.getClientName(), project.getProjectName());
         this.location = location;
         this.createRecordId();
     }
@@ -73,9 +72,9 @@ public class ManagerRecord extends Record implements Serializable
     public String toString()
     {
         return super.toString() + "\n" + "Project Information: \n" +
-                "\tProject ID: " + this.project.projectId + "\n" +
-                "\tClient Name: " + this.project.clientName + "\n" +
-                "\tProject Name: " + this.project.projectName + "\n" +
+                "\tProject ID: " + this.project.getProjectId() + "\n" +
+                "\tClient Name: " + this.project.getClientName() + "\n" +
+                "\tProject Name: " + this.project.getProjectName() + "\n" +
                 " " + "Location: " + this.getLocation() + " records.Record ID: " + this.getRecordId();
     }
 
@@ -94,39 +93,39 @@ public class ManagerRecord extends Record implements Serializable
      */
     public void setProject(ProjectInfo project)
     {
-        this.project.projectId = project.projectId;
-        this.project.clientName = project.clientName;
-        this.project.projectName = project.projectName;
+        this.project.setProjectId(project.getProjectId());
+        this.project.setClientName(project.getClientName());
+        this.project.setProjectName(project.getProjectName());
     }
 
     public String getProjectId()
     {
-        return this.project.projectId;
+        return this.project.getProjectId();
     }
 
     public String getClientName()
     {
-        return this.project.clientName;
+        return this.project.getClientName();
     }
 
     public String getProjectName()
     {
-        return this.project.projectName;
+        return this.project.getProjectName();
     }
 
     public void setProjectId(String projectId)
     {
-        this.project.projectId = projectId;
+        this.project.setProjectId(projectId);
     }
 
     public void setProjectClientName(String clientName)
     {
-        this.project.clientName = clientName;
+        this.project.setClientName(clientName);
     }
 
     public void setProjectName(String projectName)
     {
-        this.project.projectName = projectName;
+        this.project.setProjectName(projectName);
     }
 
     /**

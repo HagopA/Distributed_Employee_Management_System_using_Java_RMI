@@ -12,21 +12,25 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import org.omg.CORBA.ORB;
 import records.*;
-import server.centerServerInterfaceIDL.*;
+
+import javax.jws.WebService;
 
 /**
  * Center server class implementation, implements the CenterServerInterface
  *
  * @author Hagop Awakian
- * Assignment 2
+ * Assignment 3
  * Course: SOEN 423
  * Section: H
  * Instructor: Dr. R. Jayakumar
  * Fall 2018
  */
-public class CenterServer extends CenterServerInterfacePOA
+@WebService(endpointInterface = "server.CenterServerInterface",
+            serviceName = "centerServerService",
+            portName = "centerServerPort",
+            targetNamespace = "http://server")
+public class CenterServer implements CenterServerInterface
 {
     /**
      * Data members
@@ -36,7 +40,6 @@ public class CenterServer extends CenterServerInterfacePOA
     private FileHandler fh;
     private String serverName;
     private int recordCounts;
-    private ORB orb;
 
     /**
      * Constructor
@@ -59,7 +62,7 @@ public class CenterServer extends CenterServerInterfacePOA
      * @return Returns the message to indicate that a manager record has successfully been created
      */
     public synchronized String createMRecord(String managerId, String firstName, String lastName, int empId,
-                                             String mailId, server.centerServerInterfaceIDL.ProjectInfo project,
+                                             String mailId, ProjectInfo project,
                                              String location)
     {
         Record aMRecord = new ManagerRecord(firstName, lastName, empId, mailId, project, location);
@@ -258,7 +261,7 @@ public class CenterServer extends CenterServerInterfacePOA
                 e.printStackTrace();
             }
         }
-        this.log("Manager ID: " + managerId + " requested to get the record counts." +
+        this.log("Manager ID: " + managerId + " requested to get the record counts. " +
                 CARecords + " " + USRecords + " " + UKRecords, null);
         return CARecords + " " + USRecords + " " + UKRecords;
     }
@@ -527,15 +530,6 @@ public class CenterServer extends CenterServerInterfacePOA
             }
         }
         return recordExists;
-    }
-
-    /**
-     * Setter for the ORB object
-     * @param orb
-     */
-    public void setORB(ORB orb)
-    {
-        this.orb = orb;
     }
 
     /**

@@ -1,16 +1,18 @@
 package records;
 
+import java.io.Serializable;
+
 /**
  * Abstract Record class that stores the basic building blocks of a record
  *
  * @author Hagop Awakian
- * Assignment 2
+ * Assignment 3
  * Course: SOEN 423
  * Section: H
  * Instructor: Dr. R. Jayakumar
  * Fall 2018
  */
-public abstract class Record
+public abstract class Record implements Serializable
 {
     /**
      * Data members

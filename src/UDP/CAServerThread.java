@@ -1,8 +1,10 @@
 package UDP;
 
-import org.omg.CORBA.ORB;
-import org.omg.CosNaming.NamingContextExt;
-import org.omg.CosNaming.NamingContextExtHelper;
+import client.CAimport.CenterServerInterface;
+import client.CAimport.CenterServerService;
+import client.CAimport.ProjectInfo;
+import records.EmployeeRecord;
+import records.ManagerRecord;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -11,15 +13,11 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
-import records.EmployeeRecord;
-import records.ManagerRecord;
-import server.centerServerInterfaceIDL.CenterServerInterfaceHelper;
-import server.centerServerInterfaceIDL.CenterServerInterfaceOperations;
 /**
  * CA thread that will handle UDP requests
  *
  * @author Hagop Awakian
- * Assignment 2
+ * Assignment 3
  * Course: SOEN 423
  * Section: H
  * Instructor: Dr. R. Jayakumar
@@ -31,20 +29,20 @@ public class CAServerThread implements Runnable
      * Data members
      */
     private DatagramSocket socket;
-    CenterServerInterfaceOperations server;
+    CenterServerService service;
+    CenterServerInterface server;
 
     /**
      * Constructor
      * @param port Port number to locate the registry
      * @throws SocketException
      */
-    public CAServerThread(int port, ORB orb) throws Exception
+    public CAServerThread(int port) throws Exception
     {
-        org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
-        NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
-        String name = "CA";
-        server = CenterServerInterfaceHelper.narrow(ncRef.resolve_str(name));
-        socket = new DatagramSocket(port);
+
+        this.service = new CenterServerService();
+        this.server = service.getCenterServerPort();
+        this.socket = new DatagramSocket(port);
     }
 
     /**
@@ -89,8 +87,12 @@ public class CAServerThread implements Runnable
                     if(o instanceof ManagerRecord)
                     {
                         ManagerRecord newRecord = (ManagerRecord) o;
+                        ProjectInfo project = new ProjectInfo();
+                        project.setClientName(newRecord.getClientName());
+                        project.setProjectId(newRecord.getProjectId());
+                        project.setProjectName(newRecord.getProjectName());
                         send = (server.createMRecord("", newRecord.getFirstName(), newRecord.getLastName(),
-                                newRecord.getEmpId(), newRecord.getMailId(), newRecord.getProject(),
+                                newRecord.getEmpId(), newRecord.getMailId(), project,
                                 newRecord.getLocation()).getBytes());
                     }
                     else if(o instanceof EmployeeRecord)
@@ -109,7 +111,8 @@ public class CAServerThread implements Runnable
         catch (IOException e)
         {
             e.printStackTrace();
-        } catch (ClassNotFoundException e)
+        }
+        catch (ClassNotFoundException e)
         {
             e.printStackTrace();
         }
